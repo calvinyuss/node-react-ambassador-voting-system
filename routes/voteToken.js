@@ -29,4 +29,28 @@ router.delete(
   controller.deleteVoteTokenById
 );
 
+/**
+* Register perserta yang akan vote
+* more detials di /controllers/voteToken.js @registerToken
+* @API /api/voteTokens/:candidateID
+* @Method POST 
+* 
+*/
+router.post(
+  "/:candidateId/",
+  controller.registerToken
+);
+
+/**
+* Verify token peserta yang sudah daftar untuk vote yang valid
+* more detials di /controllers/voteToken.js @verifyToken
+* @API /verify/:voteTokenId
+* @Method POST 
+* 
+*/
+router.post(
+  "/verify/:voteTokenId",
+  controller.verifyToken
+)
+
 module.exports = router;

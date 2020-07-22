@@ -268,3 +268,28 @@ exports.deleteVoteTokenById = async (req, res) => {
     res.status(500).json({ error: { msg: "Please try again!" } });
   }
 };
+
+// register peserta yang akan vote 
+// request yang diperlukan adalah data input seperti nama, email, nomor telp
+// email dan nomor telp harus unique untuk menghindari fake vote
+// setelah register akan dikirimkan email verification ke email request
+/**
+request 
+  name|string
+  email|email
+  no|string
+url query -> candidateId -> mongoose unique id untuk kandidat 
+
+return response json
+*/
+exports.registerToken = async (req, res) => {
+
+}
+
+/**
+Verify token yang sudah di register.
+url query -> candidateId -> mongoose unique id untuk kandidat 
+*/
+exports.verifyToken = async (req, res) => {
+
+}
