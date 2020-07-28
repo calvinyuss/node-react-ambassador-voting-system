@@ -23,6 +23,7 @@ import Lotus from "./svg/Lotus";
 import TripleLotus from "./svg/TripleLotus";
 import QuestionMark from "../../../../res/images/question_mark.png";
 import Winner from "../../../../res/images/winner.png";
+import SelectInput from "@material-ui/core/Select/SelectInput";
 
 const styles = theme => ({
   retryText: {
@@ -107,6 +108,11 @@ const styles = theme => ({
     fontSize: "2.8em",
     color: "white"
   },
+  voteParagraph:{
+    fontSize: "2.8em",
+    color: "white",
+    marginTop: "0.3em"
+  },
   longBar: {
     width: "300px",
     height: "1.5px",
@@ -156,6 +162,7 @@ class ResultIndex extends React.Component {
   state = {
     loadingStatus: LOADING,
     top3Candidates: [],
+    top3VoteCount:[],
     allCandidates: [],
     candidateIndex: 0,
     stepIndex: 10,
@@ -176,8 +183,10 @@ class ResultIndex extends React.Component {
       this.setState({ loadingStatus: LOADING });
       const { candidates } = await getCandidates();
       const { voteTokens } = await getVoteTokens();
-
+      
       const voteTokensPerCandidate = _.groupBy(voteTokens, "candidateId");
+
+      //get top 3 candidate (reversed 3,2,1)
       const top3Candidates = _.chain(candidates)
         .sortBy(
           [cand => -(voteTokensPerCandidate[cand._id] || []).length],
@@ -187,11 +196,18 @@ class ResultIndex extends React.Component {
         .reverse()
         .value();
 
+      // get vote count from top 3 candidate (reverse 3, 2, 1)
+      const top3VoteCount = _.chain(top3Candidates)
+        .map(cand => voteTokensPerCandidate[cand._id].length )
+        .value();
+
       this.setState(state => ({
         loadingStatus: IDLE,
         top3Candidates,
+        top3VoteCount,
         allCandidates: _.values(candidates)
       }));
+      
       setTimeout(this.mainLoop, 200);
     } catch (error) {
       console.log({ error });
@@ -201,6 +217,7 @@ class ResultIndex extends React.Component {
 
   speeds = [1000, 50, 200, 500, 1000];
 
+  // for looping the iamge
   mainLoop = () => {
     const {
       candidateIndex,
@@ -231,13 +248,14 @@ class ResultIndex extends React.Component {
         sounds: { ...state.sounds, [moment().valueOf()]: false }
       }));
     }
-
+    
     if (this.alive)
       setTimeout(() => {
         this.mainLoop();
       }, this.speeds[stepIndex % 5]);
   };
 
+  // key event listener
   handleKeyDown = event => {
     const { stepIndex } = this.state;
     switch (event.keyCode) {
@@ -275,11 +293,13 @@ class ResultIndex extends React.Component {
       loadingStatus,
       candidateIndex,
       allCandidates,
+      top3VoteCount,
       stepIndex,
       sounds
     } = this.state;
     const candidate = allCandidates[candidateIndex];
     const sectionIndex = Math.floor(stepIndex / 5);
+    const firstWinnerVoteCount = top3VoteCount[2];
 
     // const infoEnabled =
     //   stepIndex % 5 === 4 &&
@@ -303,6 +323,7 @@ class ResultIndex extends React.Component {
 
         <BackgroundBig opacity={opacities[sectionIndex]} />
 
+        {/* the small dot at below after hexagon */}
         <div className={classes.dotContainer}>
           {_.range(10, 15).map(index => (
             <div
@@ -330,7 +351,12 @@ class ResultIndex extends React.Component {
               />
             </Grid>
 
+            {/* 
+              when loading is error show a button
+
+            */}
             {loadingStatus === ERROR ? (
+              //show a button when loading is error
               <Grid item xs={12}>
                 <Typography variant="subtitle1" className={classes.retryText}>
                   Cannot fetch data
@@ -344,6 +370,7 @@ class ResultIndex extends React.Component {
                 </Button>
               </Grid>
             ) : loadingStatus === LOADING ? (
+              //when status loading show loading progress
               <Grid item xs={12} style={{ textAlign: "center" }}>
                 <CircularProgress size={50} />
               </Grid>
@@ -360,6 +387,11 @@ class ResultIndex extends React.Component {
                         1<sup>st</sup> RUNNER UP
                       </p>
                     ) : (
+                      /**
+                       * winner text by using picture
+                       * hidden before the final result
+                       * this picture will with the final result
+                       */
                       <div
                         style={{ textAlign: "center" }}
                         className={classNames(
@@ -377,7 +409,8 @@ class ResultIndex extends React.Component {
                     )}
                   </div>
                 </Grid>
-
+                
+                {/* grid for result and image */}
                 <Grid
                   item
                   xs={12}
@@ -387,6 +420,7 @@ class ResultIndex extends React.Component {
                     justifyContent: "center"
                   }}
                 >
+                  {/* hexagon for picture  */}
                   <div style={{}}>
                     <Hexagon
                       id={1}
@@ -399,6 +433,8 @@ class ResultIndex extends React.Component {
                       }
                     />
                   </div>
+
+                  {/* this will show at final result */}
                   <div
                     xs={3}
                     style={{
@@ -430,12 +466,13 @@ class ResultIndex extends React.Component {
                         />
                       )}
                     </div>
-
+                    
                     <p className={classes.fullnameParagraph}>
                       {candidate.fullname}
                     </p>
                     <div className={classes.longBar} />
                     <p className={classes.majorParagraph}>{candidate.major}</p>
+                    <p className={classes.voteParagraph}>Vote : {firstWinnerVoteCount}</p>
                   </div>
                 </Grid>
               </Fragment>

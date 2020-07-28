@@ -230,11 +230,15 @@ class CandidateListIndex extends React.Component {
     this.setState(state => ({
       [stateName]: open === undefined ? !Boolean(state[stateName]) : open
     }));
-
+  
+  // showing main screen animation
+  // fade in, zoom out, move to top
   startAnimation = () => {
     setTimeout(() => {
+      // fade in animation
       this.setState(state => ({ animationStatus: state.animationStatus + 1 }));
       setTimeout(() => {
+        // zoom out, move logo to top and show text
         this.setState(state => ({
           animationStatus: state.animationStatus + 1
         }));
@@ -245,7 +249,7 @@ class CandidateListIndex extends React.Component {
   async componentDidMount() {
     window.addEventListener("resize", this.updateDimensions);
 
-    scrollSnapPolyfill();
+    // scrollSnapPolyfill();
     await this.fetchData();
 
     (() => {
@@ -292,6 +296,7 @@ class CandidateListIndex extends React.Component {
             message: (
               <Fragment>
                 <p>Swipe to see candidates</p>
+                {/* swipe using arrow right key */}
                 <ArrowRightAltIcon style={{ color: "white" }} />
               </Fragment>
             )
@@ -364,6 +369,7 @@ class CandidateListIndex extends React.Component {
     let splashContent = null;
     let mainContent = null;
 
+    //main screen 
     splashContent = (
       <Grid item xs={12} className={classes.splashItem}>
         <img
@@ -423,7 +429,8 @@ class CandidateListIndex extends React.Component {
             cand.orderNumber < 10 ? "0" + cand.orderNumber : cand.orderNumber
         }))
         .value();
-
+      
+      // contestant screen
       mainContent = data.map((d, index) => (
         <Grid
           item
