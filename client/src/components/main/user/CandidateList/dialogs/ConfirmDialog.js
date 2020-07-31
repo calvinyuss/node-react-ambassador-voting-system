@@ -247,7 +247,7 @@ class ConfirmDialog extends React.Component {
   };
 
   handleSecondSubmit = async () => {
-    const { updateVoteTokenByValue, state, name, history } = this.props;
+    const { registerVoterToken, state, name, history } = this.props;
     const candidate = state[name];
     const { participantData, captchaValue } = this.state;
 
@@ -266,8 +266,8 @@ class ConfirmDialog extends React.Component {
         captchaValueError: <span>&nbsp;</span>
       });
 
-      await updateVoteTokenByValue({
-        tokenValue: tokenValue.toUpperCase().replace(/ /g, ""),
+      await registerVoterToken({
+        participantData,
         captchaValue: captchaValue.toUpperCase().replace(/ /g, ""),
         candidateId: candidate._id
       });
