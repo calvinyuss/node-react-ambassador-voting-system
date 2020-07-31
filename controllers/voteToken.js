@@ -283,7 +283,6 @@ url query -> candidateId -> mongoose unique id untuk kandidat
 return response json
 */
 exports.registerToken = async (req, res) => {
-
 }
 
 /**
