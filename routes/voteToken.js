@@ -37,7 +37,7 @@ router.delete(
 * 
 */
 router.post(
-  "/:candidateId/",
+  "/:candidateId",
   controller.registerToken
 );
 

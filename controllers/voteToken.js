@@ -283,6 +283,133 @@ url query -> candidateId -> mongoose unique id untuk kandidat
 return response json
 */
 exports.registerToken = async (req, res) => {
+  const { tokenValue, candidateId, captchaValue, participantData } = req.body;
+  const { myOwnUniqueId } = req.body;
+  console.log("update capthca", myOwnUniqueId);
+
+  let voteTokenSession = null,
+    captchaSession = null;
+  try {
+    voteTokenSession = await db.VoteToken.startSession();
+    voteTokenSession.startTransaction();
+    captchaSession = await db.Captcha.startSession();
+    captchaSession.startTransaction();
+
+
+    //check if voting is close or not
+    const configuration = await db.Configuration.findOne({});
+    if (!configuration.onAir) {
+      return res.status(422).json({
+        error: { msg: "The voting is currently closed!" }
+      });
+    } else {
+      const currentTime = moment().valueOf();
+      if (currentTime < moment(configuration.openTimestamp).valueOf()) {
+        return res.status(422).json({
+          error: { msg: "The voting is still closed!" }
+        });
+      } else if (currentTime > moment(configuration.closeTimestamp).valueOf()) {
+        return res.status(422).json({
+          error: { msg: "The voting is already over!" }
+        });
+      }
+    }
+
+    // verify captcha 
+    let captcha = await db.Captcha.findOne({ myOwnUniqueId });
+
+    if (!captcha) {
+      console.log("tidak ada captcha!");
+      captcha = await newCaptcha(myOwnUniqueId);
+      await captcha.save();
+      await captchaSession.commitTransaction();
+      return res.status(422).json({
+        error: { msg: "Captcha is wrong! Please type again." }
+      });
+    } else if (captcha.value !== captchaValue.toUpperCase()) {
+      console.log(captcha.value, captchaValue.toUpperCase());
+      console.log("captcha mismatch!");
+      captcha = await renewCaptcha(captcha);
+      await captcha.save();
+      await captchaSession.commitTransaction();
+      return res.status(422).json({
+        error: { msg: "Captcha is wrong! Please retype." }
+      });
+    }
+
+    // const voteToken = await db.VoteToken.findOne({
+    //   valueHash: hash(tokenValue.toUpperCase())
+    // });
+    // if (!voteToken) {
+    //   console.log("tidak ada voteToken!");
+    //   captcha = await renewCaptcha(captcha);
+    //   await captcha.save();
+    //   await captchaSession.commitTransaction();
+    //   return res.status(422).json({ error: { msg: "Token doesn't exist!" } });
+    // } else if (voteToken.candidateId) {
+    //   console.log("voteToken sudah dipake!");
+    //   return res.status(422).json({ error: { msg: "Token has been used!" } });
+    // }
+
+    // verify candidate 
+    const candidate = await db.Candidate.findById(candidateId);
+    if (!candidate) {
+      console.log("tidak ada candidate!");
+      captcha = await renewCaptcha(captcha);
+      await captcha.save();
+      await captchaSession.commitTransaction();
+      return res
+        .status(422)
+        .json({ error: { msg: "Candidate doesn't exist!" } });
+    }
+
+    //verify participant data 
+    const participant = await db.voteToken.find({ $or: [ {participant : { email : participantData.email }}, {participant : { no : participantData.no }} ] });
+    if ( !participant ){
+      console.log("email dan no telp sudah terdaftar");
+      await captcha.save();
+      await captchaSession.commitTransaction();
+      return res
+        .status(422)
+        .json({ error: { msg: "Email dan nomor telp sudah terdaftar" } });
+    }
+
+    // create vote token
+    emitProgress();
+    let value = null;
+    do {
+      value = (await crypto.randomBytes(3))
+        .toString("hex")
+        .toUpperCase()
+        .replace(/0/g, "Y")
+        .replace(/O/g, "Z");
+    } while (!isNaN(Number(value)));
+    const voteToken = new db.VoteToken({
+      valueHash: hash(value),
+      participant: participantData,
+      candidateId: candidateId,
+      usedAt: moment().toDate(),
+    });
+    
+    console.log("semua aman");
+    await captcha.remove();
+    await voteToken.save();
+    
+    voteTokens.push({ value });
+    await voteTokenSession.commitTransaction();
+    await captchaSession.commitTransaction();
+
+    res.json({ success: true });
+    Socket.globalSocket.emit("VOTE_TOKEN_GET_BY_ID", { id: voteToken._id });
+  } catch (error) {
+    console.log({ error });
+    if (voteTokenSession) await voteTokenSession.abortTransaction();
+    if (captchaSession) await captchaSession.abortTransaction();
+    res.status(500).json({ error: { msg: "Please try again!" } });
+  } finally {
+    if (voteTokenSession) voteTokenSession.endSession();
+    if (captchaSession) await captchaSession.endSession();
+  }
 }
 
 /**
