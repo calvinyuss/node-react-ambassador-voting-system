@@ -16,6 +16,7 @@ import ResetPassword from "./main/admin/Auth/ResetPassword/Loadable";
 
 import CandidateList from "./main/user/CandidateList";
 import ThankYou from "./main/user/ThankYou";
+import ThankYou1 from "./main/user/ThankYou/ThankYou1.js";
 
 import Background from "./misc/Background";
 import AdminRouter from "./main/admin/AdminRouter";
@@ -41,6 +42,7 @@ class App extends Component {
                 <Switch>
                   <Route path="/candidateList" component={CandidateList} />
                   <Route path="/thankYou" component={ThankYou} />
+                  <Route path="/thankYou1" component={ThankYou1} />
                   <Route path="/openSesame" component={SignIn} />
                   <Route path="/forgetPassword" component={ForgetPassword} />
                   <Route

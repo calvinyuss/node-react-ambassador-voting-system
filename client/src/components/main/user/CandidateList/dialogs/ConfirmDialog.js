@@ -272,7 +272,7 @@ class ConfirmDialog extends React.Component {
         candidateId: candidate._id
       });
       this.onClose();
-      history.push("/thankYou");
+      history.push("/thankYou1");
     } catch (error) {
       console.log({ error });
       this.setState({
