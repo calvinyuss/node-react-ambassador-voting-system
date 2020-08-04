@@ -388,7 +388,6 @@ exports.registerToken = async (req, res) => {
       valueHash: hash(value),
       participant: participantData,
       candidateId: candidateId,
-      usedAt: moment().toDate(),
     });
     
     console.log("semua aman");
