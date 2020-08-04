@@ -364,8 +364,8 @@ exports.registerToken = async (req, res) => {
     }
 
     //verify participant data 
-    const participant = await db.voteToken.find({ $or: [ {participant : { email : participantData.email }}, {participant : { no : participantData.no }} ] });
-    if ( !participant ){
+    const participant = await db.VoteToken.find({ $or: [ {'participant.email' : participantData.email }, {'participant.no' : participantData.no } ] });
+    if ( participant ){
       console.log("email dan no telp sudah terdaftar");
       await captcha.save();
       await captchaSession.commitTransaction();
@@ -375,7 +375,6 @@ exports.registerToken = async (req, res) => {
     }
 
     // create vote token
-    emitProgress();
     let value = null;
     do {
       value = (await crypto.randomBytes(3))
@@ -394,9 +393,10 @@ exports.registerToken = async (req, res) => {
     await captcha.remove();
     await voteToken.save();
     
-    voteTokens.push({ value });
     await voteTokenSession.commitTransaction();
     await captchaSession.commitTransaction();
+
+    console.log(voteToken);
 
     res.json({ success: true });
     Socket.globalSocket.emit("VOTE_TOKEN_GET_BY_ID", { id: voteToken._id });
