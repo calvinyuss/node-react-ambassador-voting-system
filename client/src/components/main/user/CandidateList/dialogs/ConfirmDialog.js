@@ -8,7 +8,6 @@ import { withStyles } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import classNames from "classnames";
-import PinInput from "react-pin-input";
 
 import * as voteTokenActions from "../../../../../actions/voteToken";
 import * as snackbarActions from "../../../../../actions/snackbar";
@@ -58,7 +57,7 @@ const styles = theme => ({
     flex: "0 0 auto",
     width: "100%",
     overflow: "hidden",
-    height: "230px"
+    // height: "300px"
   },
   title: {
     color: "white",
@@ -119,6 +118,39 @@ const styles = theme => ({
     textAlign: "center",
     color: "crimson",
     marginTop: "0.3em"
+  }, 
+  input: { 
+    color: 'white',
+    marginBottom: '0.5em',
+    padding: '0 7px',
+
+    '& input': {
+      height: '30px',
+      width: '100%',
+      textIndent: '10px',
+      border: '3px solid black',
+      borderRadius: '15px',
+      outline: 'none',
+    },
+    '& .input-error': {
+      borderColor: 'red!important',
+    },
+    '& input:focus': {
+      borderColor: '#CFB539',
+    },
+
+    '& label': {
+      display: 'block',
+      marginBottom: '2px',
+      textIndent: '7px',
+    },
+
+    '& .error-msg': {
+      color: 'red',
+      fontSize: '12px',
+      textIndent: '7px',
+      fontWeight: 'bold',
+    }
   }
 });
 
@@ -134,12 +166,19 @@ function getNewCaptchaUrl() {
 
 const INITIAL_STATE = {
   submitStatus: IDLE,
-  tokenValue: "",
+  participantData: {
+    name: "",
+    email: "",
+    number: "",
+  },
   stepIndex: 0,
   captchaUrl: getNewCaptchaUrl(),
   captchaValue: "",
   tokenValueError: <span>&nbsp;</span>,
-  captchaValueError: <span>&nbsp;</span>
+  captchaValueError: <span>&nbsp;</span>,
+  nameValueError: "",
+  emailValueError: "",
+  noValueError: "",
 };
 
 class ConfirmDialog extends React.Component {
@@ -154,20 +193,63 @@ class ConfirmDialog extends React.Component {
   handleFirstSubmit = async () => {
     const { tokenValue } = this.state;
 
-    if (!tokenValue || tokenValue.replace(/ /g, "").length !== 6) {
-      this.setState({ tokenValueError: "Please input missing character(s)" });
-    } else {
+    const { participantData } = this.state; 
+
+    const name = participantData.name;
+    const email = participantData.email;
+    const no = participantData.no;
+
+    var nameValueError;
+    var emailValueError;
+    var noValueError;
+
+    var isValidate = true;
+
+    // validate name  
+    if( !name ) { // validate empty 
+      nameValueError = "Masukan nama anda";
+      isValidate = false;
+    }else if( !/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name) ){ // validate name format 
+      nameValueError = "Format nama salah";
+      isValidate = false;
+    }else { nameValueError= ""; }
+
+    // validate email
+    if( !email ){
+      emailValueError = "Masukan email anda";
+      isValidate = false;
+    }else if( !/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(email) ){
+      emailValueError = "Format Email anda salah";
+      isValidate = false; 
+    }else { emailValueError = ""; }
+
+    //validate number 
+    if ( !no ){
+      noValueError = "Masukan nomor telepon anda";
+      isValidate = false;
+    }else if( !/^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/.test(no) ){
+      noValueError = "Format nomor telepon salah";
+      isValidate = false;
+    }else { noValueError = ""; }
+
+    this.setState({
+      nameValueError,
+      emailValueError,
+      noValueError
+    })
+    if( !isValidate ){
+      return;
+    }else {
       this.setState(state => ({
         stepIndex: state.stepIndex + 1,
-        tokenValueError: <span>&nbsp;</span>
       }));
     }
   };
 
   handleSecondSubmit = async () => {
-    const { updateVoteTokenByValue, state, name, history } = this.props;
+    const { registerVoterToken, state, name, history } = this.props;
     const candidate = state[name];
-    const { tokenValue, captchaValue } = this.state;
+    const { participantData, captchaValue } = this.state;
 
     try {
       if (!captchaValue) {
@@ -183,8 +265,9 @@ class ConfirmDialog extends React.Component {
         submitStatus: SUBMITTING,
         captchaValueError: <span>&nbsp;</span>
       });
-      await updateVoteTokenByValue({
-        tokenValue: tokenValue.toUpperCase().replace(/ /g, ""),
+
+      await registerVoterToken({
+        participantData,
         captchaValue: captchaValue.toUpperCase().replace(/ /g, ""),
         candidateId: candidate._id
       });
@@ -225,6 +308,17 @@ class ConfirmDialog extends React.Component {
     console.log("load starting..");
   };
 
+  handleInputChange = e => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    var participantData = {...this.state.participantData};
+    
+    participantData[name] = value;
+
+    this.setState({ participantData })
+  }
+
   render() {
     const { state, name, classes } = this.props;
     const {
@@ -232,8 +326,10 @@ class ConfirmDialog extends React.Component {
       stepIndex,
       captchaUrl,
       captchaValue,
-      tokenValueError,
-      captchaValueError
+      captchaValueError,
+      nameValueError,
+      emailValueError,
+      noValueError,
     } = this.state;
     const candidate = state[name];
 
@@ -259,56 +355,53 @@ class ConfirmDialog extends React.Component {
               >
                 <div>
                   <p className={classes.title}>
-                    INPUT THE 6 ALPHANUMERIC <br />
-                    TOKEN FROM YOUR TICKET
+                    INPUT YOUR DATA
                   </p>
 
                   <div
                     style={{
-                      marginTop: "1.2em",
-                      display: "flex",
-                      justifyContent: "center"
+                      marginTop: "1.2em"
                     }}
                   >
-                    <PinInput
-                      length={6}
-                      initialValue=""
-                      focus
-                      onChange={(value, index) => {
-                        // if (value && value.length === 6 && index === 5) {
-                        //   this.setState({ tokenValue: value, stepIndex: 1 });
-                        // } else {
-                        //   this.setState({ tokenValue: value });
-                        // }
-                        this.setState({ tokenValue: value });
-                      }}
-                      type="custom"
-                      style={{ padding: "10px" }}
-                      inputStyle={{
-                        textTransform: "uppercase",
-                        margin: "0.2em",
-                        border: "1px solid black",
-                        borderRadius: "4px",
-                        backgroundColor: "white",
-                        height: "36px",
-                        width: "28px",
-                        fontSize: "1em"
-                      }}
-                      inputFocusStyle={{
-                        border: "3px solid #CFB539"
-                      }}
-                      ref={n => (this.pinInput = n)}
-                    />
-                  </div>
+                    <div className={classes.input}>
+                      <label>Nama Lengkap</label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="John Doe "
+                        onChange={this.handleInputChange}
+                        className={ !nameValueError ? "" : "input-error" }
+                       />
+                       <div className="error-msg">{nameValueError}</div>
+                    </div>
 
-                  {tokenValueError && (
-                    <p className={classes.tokenValueErrorMsg}>
-                      {tokenValueError}
-                    </p>
-                  )}
+                    <div className={classes.input}>
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Example@gmail.com"
+                        onChange={this.handleInputChange}
+                        className={ !emailValueError ? "" : "input-error" }
+                       />
+                       <div className="error-msg">{emailValueError}</div>
+                    </div>
+                    
+                    <div className={classes.input}>
+                      <label>Nomor Telp</label>
+                      <input
+                        type="number"
+                        name="no"
+                        placeholder="08123456789"
+                        onChange={this.handleInputChange}
+                        className={ !noValueError ? "" : "input-error" }
+                       />
+                       <div className="error-msg">{noValueError}</div>
+                    </div>
+                  </div>
                 </div>
 
-                <div style={{ textAlign: "center", marginTop: "1em" }}>
+                <div style={{ textAlign: "center", marginTop: "0.8em"}}>
                   <button
                     className={classNames("btn", "btn-grad-4", {
                       "btn-disabled": submitStatus === SUBMITTING

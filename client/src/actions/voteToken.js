@@ -74,6 +74,26 @@ export const updateVoteTokenByValue = ({
   return payload;
 };
 
+export const registerVoterToken  = ({
+  participantData,
+  captchaValue,
+  candidateId
+}) => async dispatch => {
+  console.log("myOwnUniqueId", window.myOwnUniqueId);
+  const response = await votingApi().post(`/voteTokens/${candidateId}`, {
+    participantData,
+    captchaValue,
+    candidateId,
+    myOwnUniqueId: window.myOwnUniqueId
+  });
+  const payload = { voteToken: response.data };
+  dispatch({
+    type: VOTE_TOKEN_UPDATE_BY_VALUE,
+    payload
+  });
+  return payload;
+};
+
 export const replaceVoteTokenById = id => async dispatch => {
   const response = await votingApi().put(`/voteTokens/${id}/replace`);
   const payload = { newVoteToken: response.data };

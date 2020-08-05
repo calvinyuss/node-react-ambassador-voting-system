@@ -133,7 +133,7 @@ class SignIn extends Component {
                 VOTING SYSTEM
               </Typography>
               <Typography variant="body2" gutterBottom>
-                Ambassador UPHMC 2019
+                Ambassador UPHMC 2020
               </Typography>
               <br />
               <form onSubmit={handleSubmit(this.onSubmit)}>
