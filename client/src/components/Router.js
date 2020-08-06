@@ -42,7 +42,7 @@ class App extends Component {
                 <Switch>
                   <Route path="/candidateList" component={CandidateList} />
                   <Route path="/thankYou" component={ThankYou} />
-                  <Route path="/thankYou1" component={ThankYou1} />
+                  <Route path="/verify/:tokenID" component={ThankYou1} />
                   <Route path="/openSesame" component={SignIn} />
                   <Route path="/forgetPassword" component={ForgetPassword} />
                   <Route

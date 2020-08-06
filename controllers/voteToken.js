@@ -416,5 +416,57 @@ Verify token yang sudah di register.
 url query -> candidateId -> mongoose unique id untuk kandidat 
 */
 exports.verifyToken = async (req, res) => {
+  voteTokenSession = await db.VoteToken.startSession();
+  voteTokenSession.startTransaction();
 
+  const { voteTokenId } = req.params;
+  try{
+
+    //check if voting is close or not
+    const configuration = await db.Configuration.findOne({});
+    if (!configuration.onAir) {
+      return res.status(422).json({
+        error: { msg: "The voting is currently closed!" }
+      });
+    } else {
+      const currentTime = moment().valueOf();
+      if (currentTime < moment(configuration.openTimestamp).valueOf()) {
+        return res.status(422).json({
+          error: { msg: "The voting is still closed!" }
+        });
+      } else if (currentTime > moment(configuration.closeTimestamp).valueOf()) {
+        return res.status(422).json({
+          error: { msg: "The voting is already over!" }
+        });
+      }
+    }
+
+
+    voteToken = await db.VoteToken.findById(voteTokenId);
+  
+    if(!voteToken) {
+      console.log("Vote token not found")
+      return res
+        .status(422)
+        .json({ error: { msg: "Vote token not found" } });
+    }else if(voteToken.usedAt){
+      console.log("token telah di verify")
+      res.json({ success: true });
+    }
+
+    voteToken.usedAt = moment().toDate();
+    await voteToken.save();
+
+    await voteTokenSession.commitTransaction();
+
+    res.json({ success: true });
+    Socket.globalSocket.emit("VOTE_TOKEN_GET_BY_ID", { id: voteToken._id });
+
+  } catch (error) {
+    console.log({ error });
+    if (voteTokenSession) await voteTokenSession.abortTransaction();
+    res.status(500).json({ error: { msg: "Please try again!" } });
+  } finally {
+    if (voteTokenSession) voteTokenSession.endSession();
+  }
 }
