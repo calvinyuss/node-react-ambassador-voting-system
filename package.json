@@ -18,7 +18,7 @@
   "dependencies": {
     "bcrypt-nodejs": "*",
     "body-parser": "*",
-    "canvas": "^2.4.1",
+    "canvas": "^2.6.1",
     "cloudinary": "^1.11.0",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",

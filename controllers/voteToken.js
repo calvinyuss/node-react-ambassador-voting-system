@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const db = require("../models");
 const Socket = require("../services/socket");
 const canvas = require("../modules/canvas");
+const { sendMail } = require('../services/mailer/mailgun')
 const { SHA3 } = require("sha3");
 
 function hash(value) {
@@ -364,8 +365,9 @@ exports.registerToken = async (req, res) => {
     }
 
     //verify participant data 
-    const participant = await db.VoteToken.find({ $or: [ {'participant.email' : participantData.email }, {'participant.no' : participantData.no } ] });
+    const participant = await db.VoteToken.findOne({ $or: [ {'participant.email' : participantData.email }, {'participant.no' : participantData.no } ] });
     if ( participant ){
+      console.log(participant)
       console.log("email dan no telp sudah terdaftar");
       await captcha.save();
       await captchaSession.commitTransaction();
@@ -388,6 +390,11 @@ exports.registerToken = async (req, res) => {
       participant: participantData,
       candidateId: candidateId,
     });
+
+    await sendMail(voteToken.participant.email,{
+      fullname : candidate.fullname,
+      img : candidate.image.secureUrl,
+    }, `${req.get('host')}/verify/${voteToken._id}`)
     
     console.log("semua aman");
     await captcha.remove();
@@ -441,7 +448,6 @@ exports.verifyToken = async (req, res) => {
         });
       }
     }
-    
     
     voteToken = await db.VoteToken.findById(voteTokenId);
   
