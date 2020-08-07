@@ -179,11 +179,17 @@ class ResultIndex extends React.Component {
 
   fetchData = async () => {
     const { getCandidates, getVoteTokens } = this.props;
+
+    
     try {
       this.setState({ loadingStatus: LOADING });
       const { candidates } = await getCandidates();
-      const { voteTokens } = await getVoteTokens();
+      let { voteTokens } = await getVoteTokens();
       
+      // filter voteTokens that is not used 
+      // tokens is not used dont had usedAt variable
+      voteTokens = _.filter(voteTokens, e => {return e.usedAt})
+
       const voteTokensPerCandidate = _.groupBy(voteTokens, "candidateId");
 
       //get top 3 candidate (reversed 3,2,1)
