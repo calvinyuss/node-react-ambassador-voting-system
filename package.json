@@ -29,6 +29,7 @@
     "express-brute-mongoose": "^1.1.0",
     "jwt-simple": "^0.5.6",
     "lodash": "^4.17.15",
+    "mailgun-js": "^0.22.0",
     "method-override": "^3.0.0",
     "moment": "^2.22.2",
     "mongoose": "^5.4.21",
