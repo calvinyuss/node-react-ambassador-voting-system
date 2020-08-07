@@ -7,6 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Fade from "react-reveal/Fade";
 
 import Lotus from "../CandidateList/svg/Lotus";
+import votingApi from "../../../../apis/voting.js";
 import ThankYou from "../../../../res/images/thankYou.png";
 
 const styles = theme => ({
@@ -48,6 +49,23 @@ const styles = theme => ({
 });
 
 class CandidateListIndex extends React.Component {
+  state = {
+    errorMessage : "",
+  }
+
+  async componentDidMount(){
+    try{
+      const response = await votingApi().post(`/voteTokens/verify/${this.props.match.params.tokenID}`);
+
+    }catch (error){
+      console.error({ error });
+      console.log(error.response.data.error.msg)
+      this.setState({
+        errorMessage : error.response.data.error.msg 
+      })
+    }
+  }
+
   render() {
     const { classes, history } = this.props;
 
@@ -63,9 +81,23 @@ class CandidateListIndex extends React.Component {
                   className={classes.logo}
                 />
 
-                <div className={classes.titleWrapper}>
-                  <img alt="" src={ThankYou} className={classes.title} />
-                </div>
+                  {
+                  this.state.errorMessage ?
+                  (<div className={classes.titleWrapper}>
+                    {/* <img alt="" src={ThankYou} className={classes.title} /> */}
+                    <p className={classes.contentText}>
+                      {this.state.errorMessage}
+                    </p>
+                  </div>)
+                  :
+                  (<div className={classes.titleWrapper}>
+                      <div className={classes.titleWrapper}>
+                        <img alt="" src={ThankYou} className={classes.title} />
+                      </div>
+                  </div>)
+                }
+
+                
 
                 <Lotus size={50} className={classes.lotus} />
 

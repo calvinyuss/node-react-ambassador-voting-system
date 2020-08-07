@@ -41,8 +41,8 @@ class App extends Component {
                 <Background opacity={0.7} />
                 <Switch>
                   <Route path="/candidateList" component={CandidateList} />
-                  <Route path="/thankYou" component={ThankYou} />
-                  <Route path="/verify/:tokenID" component={ThankYou1} />
+                  <Route path="/verify/:tokenID" component={ThankYou} />
+                  <Route path="/thankYou" component={ThankYou1} />
                   <Route path="/openSesame" component={SignIn} />
                   <Route path="/forgetPassword" component={ForgetPassword} />
                   <Route

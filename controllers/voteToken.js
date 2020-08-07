@@ -418,8 +418,9 @@ url query -> candidateId -> mongoose unique id untuk kandidat
 exports.verifyToken = async (req, res) => {
   voteTokenSession = await db.VoteToken.startSession();
   voteTokenSession.startTransaction();
-
+  
   const { voteTokenId } = req.params;
+
   try{
 
     //check if voting is close or not
@@ -440,8 +441,8 @@ exports.verifyToken = async (req, res) => {
         });
       }
     }
-
-
+    
+    
     voteToken = await db.VoteToken.findById(voteTokenId);
   
     if(!voteToken) {
@@ -450,11 +451,13 @@ exports.verifyToken = async (req, res) => {
         .status(422)
         .json({ error: { msg: "Vote token not found" } });
     }else if(voteToken.usedAt){
-      console.log("token telah di verify")
-      res.json({ success: true });
+      console.log("Your email already verified")
+      if (voteTokenSession) voteTokenSession.endSession();
+      return res.json({ success: true });
     }
 
     voteToken.usedAt = moment().toDate();
+    
     await voteToken.save();
 
     await voteTokenSession.commitTransaction();

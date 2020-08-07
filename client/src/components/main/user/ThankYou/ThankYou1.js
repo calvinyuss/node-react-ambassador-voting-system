@@ -8,7 +8,6 @@ import Fade from "react-reveal/Fade";
 
 import Lotus from "../CandidateList/svg/Lotus";
 import ThankYou from "../../../../res/images/thankYou.png";
-import { Typography } from "@material-ui/core";
 
 const styles = theme => ({
   picture: {
@@ -56,8 +55,11 @@ const styles = theme => ({
 });
 
 class ThankYOu1 extends React.Component {
+  
+
   render() {
     const { classes, history } = this.props;
+
 
     return (
       <Fragment>
@@ -71,16 +73,16 @@ class ThankYOu1 extends React.Component {
                   className={classes.logo}
                 />
 
-                <div className={classes.titleWrapper}>
-                  {/* <img alt="" src={ThankYou} className={classes.title} /> */}
-                  <p className={classes.contentText}>
-                    We have sent you an email to verify your account.
-                  </p>
-                  <p className={classes.contentText}>
-                    Please check your email inbox or spam.
-                  </p>
-                </div>
-
+                  <div className={classes.titleWrapper}>
+                    {/* <img alt="" src={ThankYou} className={classes.title} /> */}
+                    <p className={classes.contentText}>
+                      We have sent you an email to verify your account.
+                    </p>
+                    <p className={classes.contentText}>
+                      Please check your email inbox or spam.
+                    </p>
+                  </div>
+                
                 <Lotus size={50} className={classes.lotus} />
 
                 <div style={{ marginTop: "0.5em" }}>
