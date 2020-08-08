@@ -31,8 +31,7 @@ const styles = theme => ({
     maxWidth: "300px"
   },
   titleWrapper: {
-    marginTop: "1.8em",
-    marginBottom: "0.8em",
+    marginTop: "0.8em",
     textAlign: "center"
   },
   title: {
@@ -45,7 +44,14 @@ const styles = theme => ({
   lotus: {
     width: "2em"
   },
-  footer: { marginTop: "2.5em", width: "75%", maxWidth: "500px" }
+  footer: { marginTop: "2.5em", width: "75%", maxWidth: "500px" },
+  contentText: {
+    color: "#CFB539",
+    fontSize: "2em",
+    fontFamily: "Times New Roman",
+    padding: "0 0.5em",
+    marginBottom: "0.5em",
+  },
 });
 
 class CandidateListIndex extends React.Component {
@@ -86,6 +92,9 @@ class CandidateListIndex extends React.Component {
                   (<div className={classes.titleWrapper}>
                     {/* <img alt="" src={ThankYou} className={classes.title} /> */}
                     <p className={classes.contentText}>
+                      Something went wrong :(   
+                    </p>
+                    <p className={classes.contentText}>
                       {this.state.errorMessage}
                     </p>
                   </div>)
@@ -96,8 +105,6 @@ class CandidateListIndex extends React.Component {
                       </div>
                   </div>)
                 }
-
-                
 
                 <Lotus size={50} className={classes.lotus} />
 

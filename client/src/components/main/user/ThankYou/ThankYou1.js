@@ -7,7 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Fade from "react-reveal/Fade";
 
 import Lotus from "../CandidateList/svg/Lotus";
-import ThankYou from "../../../../res/images/thankYou.png";
+import verifyImage from "../../../../res/images/verify.png";
 
 const styles = theme => ({
   picture: {
@@ -36,7 +36,7 @@ const styles = theme => ({
   },
   title: {
     color: "#CFB539",
-    width: "70%",
+    width: "100%",
     maxWidth: "500px",
     display: "block",
     margin: "auto"
@@ -74,13 +74,13 @@ class ThankYOu1 extends React.Component {
                 />
 
                   <div className={classes.titleWrapper}>
-                    {/* <img alt="" src={ThankYou} className={classes.title} /> */}
-                    <p className={classes.contentText}>
+                    <img alt="" src={verifyImage} className={classes.title} />
+                    {/* <p className={classes.contentText}>
                       We have sent you an email to verify your account.
                     </p>
                     <p className={classes.contentText}>
                       Please check your email inbox or spam.
-                    </p>
+                    </p> */}
                   </div>
                 
                 <Lotus size={50} className={classes.lotus} />
