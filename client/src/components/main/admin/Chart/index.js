@@ -92,8 +92,13 @@ class Chart extends React.Component {
         </div>
       );
     } else {
+      // filter voteTokens that is not used 
+      // tokens is not used dont had usedAt variable
+      const filterVoteTokens = _.filter(voteTokens, e => {return e.usedAt})
+
+
       const voteTokenDict = _.groupBy(
-        voteTokens,
+        filterVoteTokens,
         voteToken => voteToken.candidateId
       );
 
