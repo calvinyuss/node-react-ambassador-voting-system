@@ -22,6 +22,11 @@ const voteTokenSchema = new mongoose.Schema(
     candidateId: {
       type: mongoose.Schema.Types.ObjectId
     },
+    participant: { 
+        name: { type: String },
+        email: { type: String },
+        no: { type: String },
+    },
     usedAt: {
       type: Date
     }

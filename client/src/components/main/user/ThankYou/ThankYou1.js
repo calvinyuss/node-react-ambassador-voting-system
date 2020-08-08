@@ -7,8 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Fade from "react-reveal/Fade";
 
 import Lotus from "../CandidateList/svg/Lotus";
-import votingApi from "../../../../apis/voting.js";
-import ThankYou from "../../../../res/images/thankYou.png";
+import verifyImage from "../../../../res/images/verify.png";
 
 const styles = theme => ({
   picture: {
@@ -31,12 +30,13 @@ const styles = theme => ({
     maxWidth: "300px"
   },
   titleWrapper: {
-    marginTop: "0.8em",
+    marginTop: "1.8em",
+    marginBottom: "0.8em",
     textAlign: "center"
   },
   title: {
     color: "#CFB539",
-    width: "70%",
+    width: "100%",
     maxWidth: "500px",
     display: "block",
     margin: "auto"
@@ -44,7 +44,6 @@ const styles = theme => ({
   lotus: {
     width: "2em"
   },
-  footer: { marginTop: "2.5em", width: "75%", maxWidth: "500px" },
   contentText: {
     color: "#CFB539",
     fontSize: "2em",
@@ -52,28 +51,15 @@ const styles = theme => ({
     padding: "0 0.5em",
     marginBottom: "0.5em",
   },
+  footer: { marginTop: "2.5em", width: "75%", maxWidth: "500px" }
 });
 
-class CandidateListIndex extends React.Component {
-  state = {
-    errorMessage : "",
-  }
-
-  async componentDidMount(){
-    try{
-      const response = await votingApi().post(`/voteTokens/verify/${this.props.match.params.tokenID}`);
-
-    }catch (error){
-      console.error({ error });
-      console.log(error.response.data.error.msg)
-      this.setState({
-        errorMessage : error.response.data.error.msg 
-      })
-    }
-  }
+class ThankYOu1 extends React.Component {
+  
 
   render() {
     const { classes, history } = this.props;
+
 
     return (
       <Fragment>
@@ -87,25 +73,16 @@ class CandidateListIndex extends React.Component {
                   className={classes.logo}
                 />
 
-                  {
-                  this.state.errorMessage ?
-                  (<div className={classes.titleWrapper}>
-                    {/* <img alt="" src={ThankYou} className={classes.title} /> */}
-                    <p className={classes.contentText}>
-                      Something went wrong :(   
+                  <div className={classes.titleWrapper}>
+                    <img alt="" src={verifyImage} className={classes.title} />
+                    {/* <p className={classes.contentText}>
+                      We have sent you an email to verify your account.
                     </p>
                     <p className={classes.contentText}>
-                      {this.state.errorMessage}
-                    </p>
-                  </div>)
-                  :
-                  (<div className={classes.titleWrapper}>
-                      <div className={classes.titleWrapper}>
-                        <img alt="" src={ThankYou} className={classes.title} />
-                      </div>
-                  </div>)
-                }
-
+                      Please check your email inbox or spam.
+                    </p> */}
+                  </div>
+                
                 <Lotus size={50} className={classes.lotus} />
 
                 <div style={{ marginTop: "0.5em" }}>
@@ -138,4 +115,4 @@ class CandidateListIndex extends React.Component {
   }
 }
 
-export default compose(withStyles(styles))(CandidateListIndex);
+export default compose(withStyles(styles))(ThankYOu1);

@@ -174,11 +174,11 @@ class CandidateListIndex extends React.Component {
       },
       {
         Header: "Status",
-        accessor: d => d.candidateId || "-",
+        accessor: d => d.usedAt || "-",
         Cell: ({ original: d }) => (
           <Chip
-            label={d.candidateId ? "USED" : "UN-USED"}
-            color={d.candidateId ? "secondary" : "primary"}
+            label={d.usedAt ? "USED" : "UN-USED"}
+            color={d.usedAt ? "secondary" : "primary"}
           />
         )
       },
@@ -254,13 +254,13 @@ class CandidateListIndex extends React.Component {
         }))
         .filter(
           voteToken =>
-            (Boolean(voteToken.candidateId) && showUsed) ||
-            (!Boolean(voteToken.candidateId) && showUnused)
+            (Boolean(voteToken.usedAt) && showUsed) ||
+            (!Boolean(voteToken.usedAt) && showUnused)
         )
         .value();
 
       const chartData = _.chain(voteTokens)
-        .groupBy(voteToken => (voteToken.candidateId ? "USED" : "UN-USED"))
+        .groupBy(voteToken => (voteToken.usedAt ? "USED" : "UN-USED"))
         .map((voteTokens, key) => ({ name: key, value: voteTokens.length }))
         .value();
 
