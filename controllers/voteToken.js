@@ -373,7 +373,7 @@ exports.registerToken = async (req, res) => {
       await captchaSession.commitTransaction();
       return res
         .status(422)
-        .json({ error: { msg: "Email dan nomor telp sudah terdaftar" } });
+        .json({ error: { msg: "Email or phone number is registered" } });
     }
 
     // create vote token

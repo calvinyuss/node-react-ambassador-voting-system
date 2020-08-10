@@ -207,28 +207,28 @@ class ConfirmDialog extends React.Component {
 
     // validate name  
     if( !name ) { // validate empty 
-      nameValueError = "Masukan nama anda";
+      nameValueError = "Input your name";
       isValidate = false;
     }else if( !/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name) ){ // validate name format 
-      nameValueError = "Format nama salah";
+      nameValueError = "Invalid name format";
       isValidate = false;
     }else { nameValueError= ""; }
 
     // validate email
     if( !email ){
-      emailValueError = "Masukan email anda";
+      emailValueError = "Input your email";
       isValidate = false;
     }else if( !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email) ){ // validate email format
-      emailValueError = "Format Email anda salah";
+      emailValueError = "Invalid email format";
       isValidate = false; 
     }else { emailValueError = ""; }
 
     //validate number 
     if ( !no ){
-      noValueError = "Masukan nomor telepon anda";
+      noValueError = "Input your phone number";
       isValidate = false;
     }else if( !/^(^\+62\s?|^0)(\d{3,4}-?){2}\d{3,4}$/.test(no) ){
-      noValueError = "Format nomor telepon salah";
+      noValueError = "Invalid Phone number format";
       isValidate = false;
     }else { noValueError = ""; }
 
@@ -364,7 +364,7 @@ class ConfirmDialog extends React.Component {
                     }}
                   >
                     <div className={classes.input}>
-                      <label>Nama Lengkap</label>
+                      <label>Full Name</label>
                       <input
                         type="text"
                         name="name"
@@ -388,7 +388,7 @@ class ConfirmDialog extends React.Component {
                     </div>
                     
                     <div className={classes.input}>
-                      <label>Nomor Telp</label>
+                      <label>Phone number</label>
                       <input
                         type="number"
                         name="no"
