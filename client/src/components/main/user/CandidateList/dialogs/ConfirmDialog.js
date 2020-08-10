@@ -218,7 +218,7 @@ class ConfirmDialog extends React.Component {
     if( !email ){
       emailValueError = "Masukan email anda";
       isValidate = false;
-    }else if( !/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/.test(email) ){
+    }else if( !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email) ){ // validate email format
       emailValueError = "Format Email anda salah";
       isValidate = false; 
     }else { emailValueError = ""; }
