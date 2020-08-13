@@ -41,6 +41,7 @@ exports.sendMail = (reciever,candidate,voteTokenId) => {
             console.log(body)
         })
     } catch (err) {
+        console.log(err)
         throw err
     }
 }
