@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm run start-dev",
     "start-dev": "nodemon app.js",
-    "heroku-postbuild": "cd client && npm install && npm run build",
+    // "heroku-postbuild": "cd client && npm install && npm run build",
     "start": "node app.js"
   },
   "author": "",
